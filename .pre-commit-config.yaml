@@ -21,7 +21,8 @@ repos:
   # Ruby conformance
   - id: fasterer
   - id: rubocop
-#- repo: https://github.com/mattlqx/pre-commit-sign
-#  rev: 039dac934ba6c9839674eb4ec51787cc092f4435
-#  hooks:
-#  - id: sign-commit
+- repo: https://github.com/mattlqx/pre-commit-sign
+  rev: ff2dd5a46ca1930cc10435581a09d8011b1753fb
+  hooks:
+  - id: sign-commit
+    verbose: true
