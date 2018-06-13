@@ -7,6 +7,8 @@ require 'digest'
 class PrecommitSign
   SIG_KEY = 'Precommit-Verified'
 
+  attr_writer :date # Manually set a commit date with a Time object
+
   def initialize(message_file)
     @message_file = message_file
   end
@@ -22,8 +24,11 @@ class PrecommitSign
   end
 
   def date
-    date_comment = /^# Date:\s+(.*)/.match(full_message)&.captures&.first
-    DateTime.parse(date_comment) unless date_comment.nil?
+    if ENV.key?('GIT_AUTHOR_DATE')
+      DateTime.strptime(ENV['GIT_AUTHOR_DATE'], '@%s %z').to_time.utc
+    else
+      (@date || Time.now).utc
+    end
   end
 
   def commit_title
@@ -35,7 +40,6 @@ class PrecommitSign
   end
 
   def signature
-    raise 'Date comment is missing from commit message' if date.nil?
     Digest::SHA256.hexdigest("#{real_message}#{date}")
   end
 
@@ -55,7 +59,7 @@ class PrecommitSign
   def write_signature
     IO.write(
       @message_file,
-      "#{real_message.chomp}\n\n#{SIG_KEY}: #{signature}\n\n# Date:  #{date}\n",
+      "#{real_message.chomp}\n\n#{SIG_KEY}: #{signature}\n",
       0,
       mode: 'w'
     )

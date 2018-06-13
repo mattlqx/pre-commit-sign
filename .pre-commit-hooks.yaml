@@ -1,5 +1,5 @@
 - id: sign-commit
-  name: sign commit
+  name: Sign commit
   description: "Hashes some fields of the commit and adds a signature for verification by other systems"
   entry: sign-commit
   language: ruby
