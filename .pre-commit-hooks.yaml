@@ -1,0 +1,9 @@
+- id: sign-commit
+  name: sign commit
+  description: "Hashes some fields of the commit and adds a signature for verification by other systems"
+  entry: sign-commit
+  language: ruby
+  pass_filenames: true
+  minimum_pre_commit_version: 0.15.4
+  stages:
+  - commit-msg

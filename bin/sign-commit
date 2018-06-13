@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'pre-commit-sign'
+
+if ARGV.empty?
+  puts "Usage: #{$PROGRAM_NAME} <file>\nWhere file is commit message path"
+  exit(false)
+elsif !File.exist?(ARGV[0])
+  puts "File #{ARGV[0]} does not exist."
+  exit(false)
+else
+  pc = PrecommitSign.new(ARGV[0])
+  if pc.commit_signature? && !pc.valid_signature?
+    puts "Existing signature in commit message is invalid (#{pc.existing_signature}), re-signing"
+  elsif pc.commit_signature? && pc.valid_signature?
+    puts 'Existing signature in commit message is valid, not signing'
+  end
+
+  unless pc.valid_signature?
+    pc.write_signature
+    puts "Signed commit with #{pc.signature}"
+  end
+end
