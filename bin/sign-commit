@@ -10,6 +10,7 @@ elsif !File.exist?(ARGV[0])
   puts "File #{ARGV[0]} does not exist."
   exit(false)
 else
+  puts "Running signing against:\n#{IO.read(ARGV[0])}"
   pc = PrecommitSign.new(ARGV[0])
   if pc.commit_signature? && !pc.valid_signature?
     puts "Existing signature in commit message is invalid (#{pc.existing_signature}), re-signing"
