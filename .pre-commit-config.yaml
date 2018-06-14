@@ -22,7 +22,7 @@ repos:
   - id: fasterer
   - id: rubocop
 - repo: https://github.com/mattlqx/pre-commit-sign
-  rev: ff2dd5a46ca1930cc10435581a09d8011b1753fb
+  rev: 0840dfbc1e11e2a9d159c2a9a30bb7f2e541b278
   hooks:
   - id: sign-commit
     verbose: true

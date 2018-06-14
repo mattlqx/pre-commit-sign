@@ -2,56 +2,112 @@
 #
 # Check https://circleci.com/docs/2.0/language-ruby/ for more details
 #
+defaults: &defaults
+  docker:
+     - image: circleci/ruby:2.4.1-node-browsers
+  working_directory: ~/repo
+
 version: 2
 jobs:
-  build:
-    docker:
-      # specify the version you desire here
-       - image: circleci/ruby:2.4.1-node-browsers
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    working_directory: ~/repo
-
+  bundle-install:
+    <<: *defaults
     steps:
       - checkout
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "Gemfile.lock" }}
+          - v2-dependencies-{{ checksum "Gemfile.lock" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
+          - v2-dependencies-
       - run:
           name: install dependencies
           command: |
             bundle install --jobs=4 --retry=3 --path vendor/bundle
-
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
-
-      # run tests!
+            - ./.bundle
+          key: v2-dependencies-{{ checksum "Gemfile.lock" }}
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "Gemfile.lock" }}
+          # fallback to using the latest cache if no exact match is found
+          - v2-dependencies-
       - run:
           name: run tests
           command: |
             mkdir /tmp/test-results
             TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
 
+            bundle install --path vendor/bundle
             bundle exec rspec --format progress \
                             --format RspecJunitFormatter \
                             --out /tmp/test-results/rspec.xml \
                             --format progress \
                             $TEST_FILES
-
       # collect reports
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: build gem
+          command: gem build pre-commit-sign.gemspec
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - '*.gem'
+  deploy:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo/workspace
+      - run:
+          name: deploy gem
+          command: |
+            cp -vr ~/repo/workspace/*.gem .
+            echo "gem `gem --version`"
+            mkdir ~/.gem
+            cat .circleci/gem_credentials | sed -e "s/__RUBYGEMS_API_KEY__/${RUBYGEMS_API_KEY}/" > ~/.gem/credentials
+            chmod 0600 ~/.gem/credentials
+            gem push pre-commit-sign-*.gem
+            shred -u ~/.gem/credentials
+workflows:
+  version: 2
+  test-build-deploy:
+    jobs:
+      - bundle-install:
+          filters:
+            tags:
+              only: /.*/
+      - test:
+          requires:
+            - bundle-install
+          filters:
+            tags:
+              only: /.*/
+      - build:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

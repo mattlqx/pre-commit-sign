@@ -7,20 +7,28 @@ require 'digest'
 class PrecommitSign
   SIG_KEY = 'Precommit-Verified'
 
+  attr_accessor :message
   attr_writer :date # Manually set a commit date with a Time object
 
-  def initialize(message_file)
+  def initialize(message_file = nil)
     @message_file = message_file
+    @message = IO.read(@message_file) unless @message_file.nil?
+  end
+
+  def self.from_message(message)
+    instance = new
+    instance.message = message
+    instance
   end
 
   def full_message
-    IO.read(@message_file)
+    message
   end
 
   # Ignores comments, leading and trailing whitespace and the signature footer
   def real_message
     m = full_message.split("\n").reject { |l| l.start_with?('#', "#{SIG_KEY}:") }.join("\n")
-    /^\s*(.*?)\s*$/m.match(m).captures.first
+    /\A\s*(.*?)\s*\Z/m.match(m).captures.first
   end
 
   def date
@@ -55,13 +63,9 @@ class PrecommitSign
     /#{SIG_KEY}:\s*([a-f0-9]+)$/.match(full_message)&.captures&.first
   end
 
-  # Real message with signature and Date comment added back for future hashing
+  # Real message with signature
   def write_signature
-    IO.write(
-      @message_file,
-      "#{real_message.chomp}\n\n#{SIG_KEY}: #{signature}\n",
-      0,
-      mode: 'w'
-    )
+    self.message = "#{real_message.chomp}\n\n#{SIG_KEY}: #{signature}\n"
+    IO.write(@message_file, message, 0, mode: 'w') unless @message_file.nil?
   end
 end
