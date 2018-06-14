@@ -7,7 +7,7 @@ This is a plugin for [pre-commit](https://pre-commit.com) that will sign your co
 To sign commits as part of your pre-commit flow, just run the sign-commit hook of this repo.
 
     - repo: https://github.com/mattlqx/pre-commit-sign
-      rev: v1.1.0
+      rev: v1.1.1
       hooks:
       - id: sign-commit
 
