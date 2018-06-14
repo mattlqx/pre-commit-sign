@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'pre-commit-sign'
-  s.version     = '1.0.0'
+  s.version     = '1.1.0'
   s.licenses    = ['MIT']
   s.summary     = 'Pre-commit plugin for signing commits'
   s.description = 'This pre-commit plugin will hash certain fields of the commit message and sign it.'
