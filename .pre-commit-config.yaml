@@ -25,4 +25,5 @@ repos:
   rev: 0840dfbc1e11e2a9d159c2a9a30bb7f2e541b278
   hooks:
   - id: sign-commit
+    language_version: 2.7.2
     verbose: true
