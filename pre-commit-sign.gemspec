@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'pre-commit-sign'
-  s.version     = '1.1.3'
+  s.version     = '1.2.0'
   s.licenses    = ['MIT']
   s.summary     = 'Pre-commit plugin for signing commits'
   s.description = 'This pre-commit plugin will hash certain fields of the commit message and sign it.'
@@ -13,5 +13,5 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/mattlqx/pre-commit-sign'
   s.metadata    = { 'source_code_uri' => 'https://github.com/mattlqx/pre-commit-sign' }
 
-  s.required_ruby_version = '>= 2.3'
+  s.required_ruby_version = '>= 3.0'
 end

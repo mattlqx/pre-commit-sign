@@ -1,29 +1,29 @@
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v1.3.0
-  hooks:
-  # Git state
-  - id: check-merge-conflict
-  - id: check-added-large-files
-  # Sensitive information
-  - id: detect-private-key
-  - id: detect-aws-credentials
-  # Generic file state
-  - id: trailing-whitespace
-  - id: mixed-line-ending
-  - id: end-of-file-fixer
-  - id: check-executables-have-shebangs
-  # Language syntax/formatting
-  - id: check-yaml
-- repo: https://github.com/jumanjihouse/pre-commit-hooks
-  rev: 1.7.1
-  hooks:
-  # Ruby conformance
-  - id: fasterer
-  - id: rubocop
-- repo: https://github.com/mattlqx/pre-commit-sign
-  rev: v1.1.2
-  hooks:
-  - id: sign-commit
-    language_version: 2.6.6
-    verbose: true
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v1.3.0
+    hooks:
+      # Git state
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      # Sensitive information
+      - id: detect-private-key
+      - id: detect-aws-credentials
+      # Generic file state
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+      - id: end-of-file-fixer
+      - id: check-executables-have-shebangs
+      # Language syntax/formatting
+      - id: check-yaml
+  - repo: https://github.com/jumanjihouse/pre-commit-hooks
+    rev: 1.7.1
+    hooks:
+      # Ruby conformance
+      - id: fasterer
+      - id: rubocop
+  - repo: https://github.com/mattlqx/pre-commit-sign
+    rev: v1.2.0
+    hooks:
+      - id: sign-commit
+        language_version: 3.2.2
+        verbose: true
